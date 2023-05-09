@@ -9,9 +9,11 @@ package sparrow._apartment;
  * @author bryan
  */
 public class Guard {
-    private int number;
-    private String name;
-    private String username;
-    private String password;
+    private int Number;
+    private char Name;
+    private String Timein;
+    private String Timeout;
+    private String Unit;
+    private String Plate;
 }
 
