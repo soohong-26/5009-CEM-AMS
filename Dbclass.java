@@ -1,12 +1,13 @@
+package ams;
+
 import java.sql.*;
 
 public class Dbclass {
-    private Connection con = null;
-    private final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String url = "jdbc:mysql://localhost:3306/ams";
-    private String userName = null;
-    private String password = null;
+    private String url = "jdbc:mysql://localhost:3306/ams";
+    private String userName = "root";
+    private String password = "joah123";
     private Statement stmt = null;
+    private Connection con = null;
     
     public Dbclass (){
         userName = "root";
@@ -15,7 +16,7 @@ public class Dbclass {
     
     public Connection connectDB() {
         try {
-            Class.forName(DRIVER);
+            Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(url, userName, password);
             if (con != null){
                 System.out.println("Successfully connected!");

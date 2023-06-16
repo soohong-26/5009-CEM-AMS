@@ -7,7 +7,11 @@ package ams;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 
 /**
@@ -32,5 +36,10 @@ public class Tool {
                 label.setText(time);
             }
         }).start();
+    }
+    
+    public void getErrorMessageOptionPane(String prompt){
+        JOptionPane.showMessageDialog(null, prompt,
+      "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
