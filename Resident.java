@@ -9,6 +9,7 @@ package ams;
  * @author User
  */
 public class Resident {
+    private String residentID;
     private String name;
     private String phoneNumber;
     private String relationshipToOwner;
@@ -16,6 +17,7 @@ public class Resident {
     
     //Constructor
     public Resident(){
+        residentID = "";
         name = "";
         phoneNumber = "";
         relationshipToOwner = "";
@@ -23,6 +25,10 @@ public class Resident {
     }
     
     //Getters
+    public String getResidentID(){
+        return this.residentID;
+    }
+    
     public String getName(){
         return this.name;
     }
@@ -40,6 +46,10 @@ public class Resident {
     }
     
     //Setters
+    public void setResidentID (String residentID){
+        this.residentID = residentID;
+    }
+    
     public void setName(String name){
         this.name = name;
     }
