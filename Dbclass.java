@@ -18,9 +18,9 @@ public class Dbclass {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(url, userName, password);
-            if (con != null){
-                System.out.println("Successfully connected!");
-            }
+//            if (con != null){
+//                System.out.println("Successfully connected!");
+//            }
         } catch (Exception e){
             System.out.println(e);
             System.out.println("Connection failed!");
