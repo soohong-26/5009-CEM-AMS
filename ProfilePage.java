@@ -23,38 +23,50 @@ public class ProfilePage extends javax.swing.JFrame {
      */
     
     private Tool tool = new Tool();
-    private Account account = new Account();
+    private ResidentAccount rAccount = new ResidentAccount();
+    private Profile profile = new Profile();
     
+    //Contructor(s)
     public ProfilePage() {
         initComponents();
         tool.displayDate(date);
         tool.displayTime(time);
     }
     
-    public ProfilePage (Account account) {
+    public ProfilePage (ResidentAccount rAccount) {
         initComponents();
         tool.displayDate(date);
         tool.displayTime(time);
-        this.account = account;
+        this.rAccount = rAccount;
         setComboBox();
     }
     
+    //Setting item into the combo box from database
     private void setComboBox() {
         Dbclass db = new Dbclass();
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        this.account.setAccountIDDB();
+        this.rAccount.setAccountIDDB();
         
         try {
             con = db.connectDB();
-            String sql = "select appearingName from profile where accountID = ?";
+            String sql = "select appearingName, mainProfile from profile where accountIDP = ?";
             pst = con.prepareStatement(sql);
-            pst.setInt (1, this.account.getAccountID()); 
+            pst.setInt (1, this.rAccount.getAccountID()); 
             rs = pst.executeQuery();
             
             while (rs.next()){
                 comboBox1.addItem(rs.getString("appearingName"));
+                
+                if (rs.getString("mainProfile").equals("Y")){
+                    this.profile.setAppearingName(rs.getString("appearingName"));
+                    this.rAccount.setMainProfile(profile);
+                } else {
+                    this.profile.setAppearingName(rs.getString("appearingName"));
+                    this.rAccount.pushSubProfiles(this.profile);
+                }
+                this.profile = new Profile();
             }
             
         } catch (Exception e){
@@ -66,6 +78,7 @@ public class ProfilePage extends javax.swing.JFrame {
         }
     }
     
+    //Login to different profile based on appearing name and password
     private boolean login() {
         Dbclass db = new Dbclass();
         Connection con = null;
@@ -74,15 +87,19 @@ public class ProfilePage extends javax.swing.JFrame {
         
         try {
             con = db.connectDB();
-            String sql = "select appearingName from profile where profilePin = ?";
+            String sql = "select profileID from profile where profilePin = ? and appearingName = ?";
             pst = con.prepareStatement(sql);
-            pst.setString (1, passwordField.getText().toString()); 
+            pst.setString (1, passwordField.getText().toString());
+            pst.setString(2, comboBox1.getSelectedItem().toString());
             rs = pst.executeQuery();
             
             if (rs.next()){
+                this.profile.setAppearingName(comboBox1.getSelectedItem().toString());
+                this.rAccount.setUsingProfile(profile);
                 return true;
+            } else {
+                return false;
             }
-            return false;
             
         } catch (Exception e){
             e.printStackTrace();
@@ -113,15 +130,18 @@ public class ProfilePage extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
+        jButton3 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("AMS | Profile");
+        setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(0, 153, 153));
-        jPanel1.setForeground(new java.awt.Color(242, 242, 242));
+        jPanel1.setBackground(new java.awt.Color(247, 127, 0));
+        jPanel1.setForeground(new java.awt.Color(247, 127, 0));
         jPanel1.setPreferredSize(new java.awt.Dimension(1280, 720));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(204, 0, 0));
+        jPanel2.setBackground(new java.awt.Color(0, 48, 73));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -149,7 +169,7 @@ public class ProfilePage extends javax.swing.JFrame {
         comboBox1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jPanel1.add(comboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 240, 230, 80));
 
-        jButton2.setBackground(new java.awt.Color(51, 204, 0));
+        jButton2.setBackground(new java.awt.Color(252, 191, 73));
         jButton2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Go");
@@ -178,11 +198,22 @@ public class ProfilePage extends javax.swing.JFrame {
             }
         });
         passwordField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                passwordFieldKeyReleased(evt);
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                passwordFieldKeyPressed(evt);
             }
         });
         jPanel1.add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 430, 230, 30));
+
+        jButton3.setBackground(new java.awt.Color(0, 51, 204));
+        jButton3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
+        jButton3.setText("Back");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 550, 140, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -195,7 +226,7 @@ public class ProfilePage extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        setSize(new java.awt.Dimension(1294, 727));
+        setSize(new java.awt.Dimension(1296, 728));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -206,8 +237,9 @@ public class ProfilePage extends javax.swing.JFrame {
         }
         if (!login()) {
             tool.getErrorMessageOptionPane("Incorrect password! Please try again!");
+            return;
         }
-        HomePage hp = new HomePage(account);
+        HomePage hp = new HomePage(rAccount);
         dispose();
         hp.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -228,7 +260,7 @@ public class ProfilePage extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_passwordFieldFocusLost
 
-    private void passwordFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyReleased
+    private void passwordFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyPressed
         if (evt.getKeyCode() != KeyEvent.VK_ENTER){
             return;
         }
@@ -238,11 +270,21 @@ public class ProfilePage extends javax.swing.JFrame {
         }
         if (!login()) {
             tool.getErrorMessageOptionPane("Incorrect password! Please try again!");
+            return;
         }
-        HomePage hp = new HomePage(account);
+        HomePage hp = new HomePage(rAccount);
         dispose();
         hp.setVisible(true);
-    }//GEN-LAST:event_passwordFieldKeyReleased
+    }//GEN-LAST:event_passwordFieldKeyPressed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if (!this.rAccount.getAccountEntries().timeOut()){
+            tool.getErrorMessageOptionPane("Something went wrong!");
+        }
+        LoginPage lp = new LoginPage();
+        lp.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -283,6 +325,7 @@ public class ProfilePage extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboBox1;
     private javax.swing.JLabel date;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
