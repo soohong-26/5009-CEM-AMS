@@ -22,6 +22,7 @@ import javax.swing.Timer;
 public class Tool {
     private Color color;
     
+    //To display date 
     public void displayDate(javax.swing.JLabel label){
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -29,6 +30,7 @@ public class Tool {
         label.setText(stringDate);
     }
     
+    //To display time
     public void displayTime(javax.swing.JLabel label){
         new Timer (0,new ActionListener() {
             @Override
@@ -41,15 +43,18 @@ public class Tool {
         }).start();
     }
     
+    //Get error message pane
     public void getErrorMessageOptionPane(String prompt){
         JOptionPane.showMessageDialog(null, prompt,
       "Error", JOptionPane.ERROR_MESSAGE);
     }
     
+    //Get information message pane
     public void getInformationMessageOptionPane (String prompt){
         JOptionPane.showMessageDialog(null, prompt);
     }
     
+    //Setting colors whenever mouse enter or exit different panels
     public Color mouseEnterColorHome() {
         return color = new Color (0,74,112);
     }
@@ -67,18 +72,44 @@ public class Tool {
     }
     
     public Color mouseEnterLogOut() {
-        return color = new Color (225,96,96);
+        return color = new Color (255,163,101);
     }
     
     public Color mouseExitLogOut(){
+        return color = new Color(255,102,0);
+    }
+    
+    public Color mouseEnterExit() {
+        return color = new Color(223,92,92);
+    }
+    
+    public Color mouseExitExit(){
         return color = new Color(214,40,40);
     }
     
+    //Setting text field gained focus color, whenever the text field gained focus
     public Color textGainedFocusColor() {
         return color = new Color (0,0,0);
     }
     
+    //Setting text field lost focus color, whenever the text field lost focus
     public Color textLostFocusColor() {
         return color = new Color (153, 153, 153);
+    }
+    
+    //Getting split number, as or text field for phone number is have
+    //country code and phone number
+    public String[] getSplitNumber (String phoneNumber){
+         String[] phoneNumberArr = new String[2];
+         int tempIndex = 0;
+         
+         for (int i=0; i<phoneNumber.length(); i++){
+             if (phoneNumber.substring(i, i+1).equals("-")){
+                 tempIndex = i;
+             }
+         }
+         phoneNumberArr[0] = phoneNumber.substring(0, tempIndex);
+         phoneNumberArr[1] = phoneNumber.substring(tempIndex+1);
+         return phoneNumberArr;
     }
 }

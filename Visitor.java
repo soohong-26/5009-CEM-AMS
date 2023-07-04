@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
 /**
  *
  * @author User
@@ -30,6 +31,8 @@ public class Visitor {
     
     //Constructor
     public Visitor(){
+        String nullDate = "0000-01-01";
+        String nullTime = "00:00:00";
         this.name = "";
         this.contactNo = "";
         this.visitUnit = "";
@@ -37,9 +40,12 @@ public class Visitor {
         this.carPlate = "";
         this.parkingLot = "";
         this.timeIn = new Date();
-        this.timeOut = new Date();
         this.dateIn = new Date();
-        this.dateOut = new Date();
+        
+        try {
+            this.timeOut = time.parse(nullTime);
+            this.dateOut = date.parse(nullDate);
+        } catch (Exception e){}
     }
     
     //Getters
@@ -125,6 +131,7 @@ public class Visitor {
     }
     
     //Other function(s)
+    //Validating whether this visitor has car checked in in the apartment or not
     public boolean hasCarCheckedIn(){
         Dbclass db = new Dbclass();
         PreparedStatement pst = null;
@@ -134,7 +141,7 @@ public class Visitor {
         try {
             con = db.connectDB();           
             String sql = "select carPlate from visitationentries where name = ? and contactNo = ? "
-                       + "and timeOut is null";
+                       + "and dateOut = \"0001-01-01\"";
             pst = con.prepareStatement(sql);
             pst.setString(1, this.name);
             pst.setString(2, this.contactNo);
@@ -151,6 +158,7 @@ public class Visitor {
         return false;
     }
     
+    //Validating this visitor has car history or not
     public boolean hasCarHistory(){
         Dbclass db = new Dbclass();
         PreparedStatement pst = null;
@@ -177,6 +185,7 @@ public class Visitor {
         return false;
     }
     
+    //Getting visitor's car plate
     public String getCarPlateFromDB (String isNull){
         Dbclass db = new Dbclass();
         PreparedStatement pst = null;
@@ -188,7 +197,7 @@ public class Visitor {
             try {
                 con = db.connectDB();           
                 String sql = "select carPlate from visitationentries where name = ? and contactNo = ? "
-                           + "and timeOut is null";
+                           + "and timeOut = \"24:00:00\"";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, this.name);
                 pst.setString(2, this.contactNo);
@@ -210,7 +219,7 @@ public class Visitor {
             try {
                 con = db.connectDB();           
                 String sql = "select carPlate from visitationentries where name = ? and contactNo = ? "
-                           + "and timeOut is not null";
+                           + "and timeOut != \"24:00:00\"";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, this.name);
                 pst.setString(2, this.contactNo);
@@ -232,6 +241,7 @@ public class Visitor {
         
     }
     
+    //Getting where they park their car in the apartment
     public String getParkingLotFromDB (String isNull){
         Dbclass db = new Dbclass();
         PreparedStatement pst = null;
@@ -242,7 +252,7 @@ public class Visitor {
         if (isNull.equals("null")){
             try {
                 con = db.connectDB();           
-                String sql = "select parkingLot from visitationentries where name = ? and timeOut is null";
+                String sql = "select parkingLot from visitationentries where name = ? and timeOut = \"24:00:00\"";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, this.name);
                 rs = pst.executeQuery();
@@ -262,7 +272,7 @@ public class Visitor {
         } else {
             try {
                 con = db.connectDB();           
-                String sql = "select parkingLot from visitationentries where name = ? and timeOut is not null";
+                String sql = "select parkingLot from visitationentries where name = ? and timeOut != \"24:00:00\"";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, this.name);
                 rs = pst.executeQuery();
@@ -283,6 +293,7 @@ public class Visitor {
         
     }
     
+    //Validating this information has checked in or not
     public boolean hasCheckedIn (){
         Dbclass db = new Dbclass();
         PreparedStatement pst = null;
@@ -291,7 +302,7 @@ public class Visitor {
         
         try {
             con = db.connectDB();           
-            String sql = "select timeIn from visitationentries where name = ? and contactNo = ? and timeOut is null ";
+            String sql = "select timeIn from visitationentries where name = ? and contactNo = ? and dateOut = \"0001-01-01\" ";
             pst = con.prepareStatement(sql);
             pst.setString(1, this.name);
             pst.setString(2, this.contactNo);
